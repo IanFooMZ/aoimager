@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Optimize Device",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "configs/test_config.yaml",
+                "opt"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Evaluate and Plot Performance",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "configs/test_config.yaml",
+                "eval",
+                "trials/optimize_tk_trial16"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "optimizer",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "project_directory/parameters.pickle", 
+                "opt"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+
+    ]
+}

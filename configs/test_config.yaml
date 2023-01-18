@@ -1,0 +1,139 @@
+# PyTorch Backend Parameters
+backend:
+    random_seed : 1
+    torch_backend_cudnn_enabled : False
+
+data:
+    name: MNIST
+    path: oxford_iiit_pet:3.*.*
+    image_size: 24                  # px
+    load_with_info: true
+
+    img_dimension: 25 #101 #28
+    img_mesh: 0.25 #0.902
+
+    # TODO: Delete this section, should be replaced by whatever comes out from the DataLoader
+    number_dataset_samples: 70000     
+    number_training_samples : 1000 #50000
+    number_validation_samples : 200 #10000
+    training_batch_size : 20 #100
+    batch_norm_full_network : False
+
+train:
+    batch_size: 64
+    buffer_size: 1000
+    epochs: 12
+    val_subsplits: 5
+    optimizer:
+        type: adam
+        learning_rate: 0.01
+        momentum: 0.5
+
+    metrics:
+    - accuracy
+
+validation:
+    batch_size : 
+
+test:
+    batch_size: 1000
+    log_interval: 10
+
+model:
+    input:
+    - 128
+    - 128
+    - 3
+    up_stack:
+        layer_1: 512
+        layer_2: 256
+        layer_3: 128
+        layer_4: 64
+        kernels: 3
+    output: 3
+
+device:             # all measurements in um
+    num_device_layers : 2
+
+    input_layer_thickness : 10
+    output_layer_thickness : 10
+
+    add_substrate : False
+    substrate_thickness : 111
+    substrate_index : 1.65
+    input_index : 1.65
+    output_index : 1.0
+
+    design_layer_thickness : 0.75
+    has_spacers : False
+    spacer_layer_thickness : 1.155
+    spacer_layer_index : 1.56
+    device_index : 1.5
+    device_background_index : 1.0
+
+    encapsulation_thickness : 0.0
+    encapsulation_index : 1.0
+
+    device_initialization : "random"
+    initialization_blur_sigma : 3
+    initialization_mean : 0.5
+    initialization_std : 0.1
+    initiailization_uniform_density : 0.5
+
+    number_additional_dof : 0
+    init_function_additional_dof : "init_phase_dof"
+    bounds_function_additional_dof : "bounds_phase_dof"
+
+
+simulation:
+    # Many of these parameters are necessary for, and only used for, gRCWA implementation.
+    num_planewaves : 101
+    num_frequencies : 1
+    num_polarizations : 1
+    num_polarizations_out : 2
+    num_theta : 15  # 15
+    num_phi : 7     # 2
+    num_orders : 5
+    zero_order_weight : 0
+
+    min_wl : 0.33 #1.0      # um
+    max_wl : 0.33 #1.0      # um
+
+    lattice_x : [ 2.5, 0 ]
+    lattice_y : [ 0, 2.5 ]
+    polarizations : [ 'p' ]       # [ 's' ]
+
+    min_theta_deg : 0
+    # todo: make sure this doesn't overlap with grating angle!
+    max_theta_deg : 10  # 30
+    objective_numerical_aperture : 0.5
+
+    # todo: should this go all the way to 360?  or is it taken care of by negative theta?
+    min_phi_deg : 0
+    max_phi_deg : 180  #45
+
+    angular_spread_size_deg : 120
+    amplitude_spread_bounds : [ 0.2, 0.8 ]
+    
+    permittivity_symmetry_function : "woodpile_and_vertical_flip_symmetry_explicit"
+    # permittivity_symmetry_function : "vertical_flip_symmetry_explicit"
+    # permittivity_symmetry_function : "c4_symmetry_explicit"
+
+    normalize_to_Fresnel : False
+    fom_adjustment_function : "modify_transmission_flat_phase"
+
+optimization: 
+    Q_ramp_start : 5
+    Q_ramp_end : 1000
+    Q_ramp_style : 'exponential'
+    Q_number_steps : 10
+    max_iterations_per_Q : 100
+
+    num_nn_epochs_per_photonic_epoch : 0
+    num_photonic_grad_descent_iter : 30         # Sets the number of iterations for photonic optimization for each NN epoch.
+    optimization_tolerance : 1.e-8
+
+    optimize_diffraction_efficiency : True
+    enable_method_of_moving_asymptotes : False
+    enable_method_of_moving_asymptotes_diffraction : False
+    gradient_descent_step_size_normalized : 0.010   #0.025

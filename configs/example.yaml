@@ -1,0 +1,242 @@
+num_device_layers : 2
+#NOTE (Greg):
+# what happens when the angle approaches the first diffraction order angle especially of a
+# single layer device? I think that will get hard to design for because it will start being
+# related to the first order grating transmission/reflection.  So you need to choose this
+# period accordingly so that the max angle you pick (i.e. - the numerical aperture)
+# is distanced from it I believe.
+#
+  
+random_seed : 173862
+
+lattice_x : [ 2.5, 0 ]
+lattice_y : [ 0, 2.5 ]
+
+restart : True
+Q_idx_restart : 35
+check_finite_difference : False
+
+num_planewaves : 101
+
+device_Nx : 35
+device_Ny : 35
+
+static_weights_specifier : "uniform"
+
+# decay_theta_deg : 0.1
+# ratio_normal_to_final : 0.25
+
+Q_ramp_start : 5
+Q_ramp_end : 1000
+Q_ramp_style : 'exponential'
+Q_number_steps : 10
+max_iterations_per_Q : 100
+
+
+just_nn_opt : False
+no_tmap_opt : False
+
+optimization_tolerance : 1.e-8
+
+input_layer_thickness : 10
+output_layer_thickness : 10
+
+add_substrate : False
+substrate_thickness : 111
+substrate_index : 1.65
+input_index : 1.65
+output_index : 1.0
+
+design_layer_thickness : 0.75
+has_spacers : False
+spacer_layer_thickness : 1.155
+spacer_layer_index : 1.56
+
+device_index : 1.5
+device_background_index : 1.0
+
+#
+# also - binarization and feature size control (put in blocking, but maybe use blurring with sigmoid next)
+# sigmoid binarization would be good to add!
+#
+# need to think about how this normalization goes here! because
+# we will have coupling into sapphire with no ARC - will we include
+# this interface?
+#
+normalize_to_Fresnel : False
+substrate_normalization : True
+pre_substrate_index : 1.0
+
+device_initialization : "random"
+initialization_blur_sigma : 3
+initialization_mean : 0.5
+initialization_std : 0.1
+initiailization_uniform_density : 0.5
+
+fom_adjustment_function : "modify_transmission_flat_phase"
+
+init_function_additional_dof : "init_phase_dof"
+bounds_function_additional_dof : "bounds_phase_dof"
+
+standard_optimization_goal : "phase_imaging_shift"  # "quadratic"
+
+# phase_imaging_orders : [ 1, 2, 4 ]
+
+# quadratic_max_transmission : 0.75
+phase_shift_max_transmission : 0.8
+phase_imaging_shift_amount : 0.5
+
+do_simulation_polarizers : False
+
+permittivity_binarize : True
+binarize_beta_start : 0.03125
+binarize_eta : 0.5
+binarize_final_epoch_power : 12.0
+
+num_frequencies : 1
+num_polarizations : 1
+num_theta : 20
+num_phi : 7
+num_orders : 5
+zero_order_weight : 0
+
+min_frequency : 1.0
+max_frequency : 1.0
+
+polarizations : [ 'p' ]       # [ 's' ]
+
+min_theta_deg : 0
+# todo: make sure this doesn't overlap with grating angle!
+max_theta_deg : 25
+objective_numerical_aperture : 0.5
+
+
+# todo: should this go all the way to 360?  or is it taken care of by negative theta?
+min_phi_deg : 0
+max_phi_deg : 180
+
+img_dimension : 101
+img_mesh : 0.25
+
+# pre_downsample_dimension : 100
+downsample_factor : 3
+
+number_dataset_samples : 250
+number_training_samples : 150
+number_validation_samples : 75
+training_batch_size : 10
+batch_norm_full_network : False
+#True
+
+
+should_downsample_kmap : False
+#True
+downsample_kmap_factor : 1
+#5
+
+
+num_contrast_epochs_per_photonic_epoch : 1
+#0
+#1
+#1
+#2
+#1
+#2
+#0
+#2
+#2
+#0
+#2
+
+learning_rate_boost_photonic : 50000
+
+max_movement_photonic : 0.1
+
+num_nn_epochs_per_photonic_epoch : 5
+num_photonic_grad_descent_iter : 30
+
+num_diffraction_epochs_per_photonic_epoch : 15
+#5
+#25
+#25
+#25
+#2
+#25
+#1
+#25
+#0
+#25
+#0
+#25
+
+weight_diffraction_suppress_relative_enhance : 3
+#5
+mask_diffraction_range : 0
+#5
+
+num_interference_images : 3
+
+
+#1
+#20
+#50
+#10
+#5
+#0
+#10
+#0
+#10
+#
+#2
+#0
+#10
+
+#5
+num_photonic_grad_descent_iter : 450
+#90
+#90
+#30
+num_photonic_grad_descent_diffraction_iter : 30
+
+optimize_diffraction_efficiency : True
+
+angular_spread_size_degrees : 120
+amplitude_spread_bounds : [ 0.2, 0.8 ]
+# use_dataset_creation_v2 : True
+
+enable_method_of_moving_asymptotes_diffraction : False
+enable_method_of_moving_asymptotes : True
+gradient_descent_step_size_normalized : 0.025
+max_movement_permittivity_per_round : 0.5
+#False
+#True
+#False
+
+enable_method_of_moving_asymptotes : False
+#True
+#False
+#True
+#True
+#True
+# True
+# True
+mma_gradient_multiplier : 1
+#1.e+3
+gradient_descent_step_size_normalized : 0.015
+#25
+#0.1
+#0.1
+#0.025
+
+learning_rate : 0.04
+#0.1
+# 0.025
+# learning_rate : 0.1
+learning_rate_decay_by_epoch : 0.8
+learning_rate_contrast : 0.001
+learning_rate_diffraction : 1.0
+
+# "dynamic_weights_specifier" : "dynamic_weight_squared_proportion"
+# permittivity_symmetry_function : "woodpile_and_vertical_flip_symmetry_explicit"
+# permittivity_symmetry_function : "vertical_flip_symmetry_explicit"
+# permittivity_symmetry_function : "c4_symmetry_explicit"
