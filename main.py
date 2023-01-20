@@ -657,6 +657,8 @@ if processor_rank == 0:
 	#* Create the datasets and wrap them with DataLoaders
 	# Guide to DataLoaders: https://blog.paperspace.com/dataloaders-abstractions-pytorch/
 	# Custom Datasets and DataLoaders: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
+	# TODO: Please consider externally saving the dataset images and then referencing them.
+	# TODO: This would make it easier for augmentations, processing, and especially Fourier conversion storage.
 
 	# Enable GPU handling if possible
 	worker_kwargs = {'num_workers': 0, 'pin_memory': False}
@@ -667,7 +669,10 @@ if processor_rank == 0:
 
 	dataset_kwargs = {'name': p.data['name'], 'img_dimension': p.data['img_dimension']}
 	
+	# Retrieve Dataset
 	dataset_samples = datasets.get_processed_dataset(True, **dataset_kwargs)
+ 
+	# Split into training and validation samples
 	training_samples = torch.utils.data.Subset(dataset_samples, range(0, p.data['number_training_samples']))
 	validation_samples = torch.utils.data.Subset(dataset_samples, range(p.data['number_training_samples'],
 									p.data['number_training_samples'] + p.data['number_validation_samples']))
@@ -676,11 +681,18 @@ if processor_rank == 0:
 	validation_samples_targets = dataset_samples.targets[ range(p.data['number_training_samples'],
 								p.data['number_training_samples'] + p.data['number_validation_samples']) ]
  
+	# Perform image augmentation on training dataset and also just convert it into a Dataset instead of a Subset
+	training_samples, training_samples_targets = datasets.augment(training_samples, dataset_samples.transform,
+                                                               p.data['augmentations'])
+	validation_samples, validation_samples_targets = datasets.augment(validation_samples, dataset_samples.transform, [])
+ 
+	# Wrap in Dataloaders
 	train_loader = torch.utils.data.DataLoader(training_samples, batch_size=p.train['batch_size'], shuffle=True, 
 											**worker_kwargs)
 	validation_loader = torch.utils.data.DataLoader(validation_samples, batch_size=p.train['batch_size'], shuffle=True, 
 											**worker_kwargs)
  
+	# Retrieve dataset test samples and wrap in DataLoader
 	test_samples = datasets.get_processed_dataset(False, **dataset_kwargs)
 	test_loader = torch.utils.data.DataLoader(test_samples, batch_size=p.validation['batch_size'], shuffle=True, 
 												 **worker_kwargs)
@@ -822,6 +834,7 @@ if processor_rank == 0:
 		# nn_model = networks.simple_net(p.simulation['num_orders'])		# TODO: Turn off!!
 		
 		# Define NN Optimizer
+		#! TODO: Could just feed transmission_map_device_ in alongside nn_model.parameters()
 		if p.train['optimizer']['type'].upper() in ['SGD']:
 			nn_optimizer = torch.optim.SGD( nn_model.parameters(), 
 									lr = p.train['optimizer']['learning_rate'], 
@@ -835,7 +848,7 @@ if processor_rank == 0:
 			print( 'Unknown optimizer type!' )
 			sys.exit( 1 )
 
-		# Define loss function
+		# Define loss function		https://blog.paperspace.com/pytorch-loss-functions/
 		nn_loss_fn = torch.nn.MSELoss()
 		# nn_loss_fn = torch.nn.L1Loss()
   
@@ -1385,7 +1398,7 @@ if processor_rank == 0:
    
 			print('All plots for dataset generated.')
 	 
-		dataset_sample_idx = 58
+		dataset_sample_idx = 58		# TODO: At some point write some code to make this idx be one that actually is classified correctly
 		# Show original image and FT
 		plt.subplot( 1, 3, 1 )
 		im1 = plt.imshow(torch.squeeze(training_samples[dataset_sample_idx][0]))
@@ -1513,6 +1526,7 @@ if processor_rank == 0:
      
 				
   		# TODO: Check gradients
+
 
 #* If not the master, then this is one of the workers!
 

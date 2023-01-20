@@ -49,12 +49,15 @@ def calculate_2dift(input):
 def apply_NA_in_kspace(image_fft, kx_values, ky_values, frequencies, numerical_aperture):
 	'''Takes as input an FFT'd 2D image and then applies NA mask based on kr_max which is given by the ranges of theta and phi.
 	Output: 2D image in Fourier space with k-mask'''
+ 
+	image_fft_xsize = np.shape(image_fft)[-2]
+	image_fft_ysize = np.shape(image_fft)[-1]
 	
 	num_kx = len(kx_values)
 	num_ky = len(ky_values)
-	kx_start = ( np.shape(image_fft)[1] // 2 ) - ( num_kx // 2 )
-	ky_start = ( np.shape(image_fft)[2] // 2 ) - ( num_ky // 2 )
-	if np.shape(image_fft)[1] != np.shape(image_fft)[2]:
+	kx_start = ( image_fft_xsize // 2 ) - ( num_kx // 2 )
+	ky_start = ( image_fft_ysize // 2 ) - ( num_ky // 2 )
+	if image_fft_xsize != image_fft_ysize:
 		print('Alert! The input image is not square.')
 		sys.exit(1)
  
@@ -70,7 +73,10 @@ def apply_NA_in_kspace(image_fft, kx_values, ky_values, frequencies, numerical_a
 			kr_max = ( 2 * np.pi * frequencies[ 0 ] ) * numerical_aperture
 
 			if kr >= kr_max:
-				image_fft[0, kx_idx + kx_start, ky_idx + ky_start ] = 0
+				try:		# assuming image_fft is 3-D
+					image_fft[0, kx_idx + kx_start, ky_idx + ky_start ] = 0
+				except Exception as err:	# otherwise, it's 2-D
+					image_fft[ kx_idx + kx_start, ky_idx + ky_start ] = 0
 	
 	return image_fft
 

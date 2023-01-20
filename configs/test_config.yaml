@@ -19,6 +19,32 @@ data:
     training_batch_size : 20 #100
     batch_norm_full_network : False
 
+    augmentations:
+    # - type: rotation
+    #   random: True
+    #   wrap: True
+    #   angle_range: 10 # deg
+    # - type: shift
+    #   x: 0.0         # factor of image size
+    #   y: 0.15
+    #   random: True
+    # # - type: flip
+    # #   lr: True
+    # #   ud: True
+    # - type: intensity
+    #   brightness_factor: 0.45  # percent of original
+    #   random: False
+    # - type: random_noise
+    #   sigma: 0.155
+    # - type: gaussian_blur
+    #   sigma: 0.7
+    #   multichannel: False
+    # # - type: random_crop
+    # # - type: random_blocks
+    # #   number: 5
+    # #   size: 0.1      # factor of image size
+
+
 train:
     batch_size: 64
     buffer_size: 1000

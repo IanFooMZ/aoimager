@@ -25,7 +25,7 @@
             "args": [
                 "configs/test_config.yaml",
                 "eval",
-                "trials/optimize_tk_trial16"
+                "trials/optimize_tk_trial32"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -41,7 +41,19 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "digital_cousin",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "-e", "10"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
+
 
     ]
 }
